@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi, ada pesan buat kamu</title>
+    <style>
+        :root {
+            --bg-hangat: #fff5f5;
+            --putih-bersih: #ffffff;
+            --warna-aksen: #ff8fa3;
+            --warna-hover: #ff758f;
+            --teks-utama: #4a3b32;
+            --teks-pudar: #8a766a;
+        }
+
+        body {
+            background-color: var(--bg-hangat);
+            color: var(--teks-utama);
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* GLOW BACKGROUND EFFECT */
+        .glow-bg {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,143,163,0.15) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            top: 10%;
+            left: -10%;
+            z-index: 2;
+            animation: mengapungGlow 8s infinite alternate;
+        }
+        .glow-bg2 {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,209,220,0.2) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            bottom: -10%;
+            right: -10%;
+            z-index: 2;
+            animation: mengapungGlow 12s infinite alternate-reverse;
+        }
+
+        /* CONTAINER UTAMA EFEK LATAR GUGURAN */
+        .efek-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* OBJEK LATAR 1: KELOPAK SAKURA */
+        .petal {
+            position: absolute;
+            background-color: #ffb3c1;
+            border-radius: 150% 0 150% 150%;
+            opacity: 0.8;
+            transform: rotate(45deg);
+            animation: fall linear infinite;
+        }
+
+        /* OBJEK LATAR 2: DAUN GUGUR */
+        .leaf {
+            position: absolute;
+            background-color: #a7c957;
+            border-radius: 0 100% 0 100%;
+            opacity: 0.85;
+            animation: fallLeaf linear infinite;
+            box-shadow: inset -2px -2px rgba(0,0,0,0.05);
+        }
+
+        /* CARD WRAPPER SURAT */
+        .wrapper {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 30px 22px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(255, 143, 163, 0.12);
+            max-width: 350px;
+            width: 85%;
+            text-align: center;
+            border: 1px solid rgba(255, 227, 232, 0.6);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            position: relative;
+            z-index: 10;
+            margin: 20px 0;
+        }
+
+        .garis {
+            width: 45px;
+            height: 2px;
+            background-color: var(--warna-aksen);
+            margin: 0 auto 20px;
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-weight: 400;
+            letter-spacing: 2px;
+            margin: 0 0 15px;
+            font-size: 1.25rem;
+            color: #d9647b;
+        }
+
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--teks-pudar);
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .tombol-box {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 0.85rem;
+            border: 1px solid #ffd1dc;
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-buka, .btn-ya, .btn-lanjut {
+            background-color: var(--warna-aksen);
+            color: white;
+            border-color: var(--warna-aksen);
+        }
+
+        .btn-buka:hover, .btn-ya:hover, .btn-lanjut:hover {
+            background-color: var(--warna-hover);
+            box-shadow: 0 0 12px rgba(255, 117, 143, 0.4);
+        }
+
+        .btn-buka { animation: denyutGlow 2s infinite; }
+        .btn-tidak { color: var(--teks-pudar); }
+        .btn-tidak:hover { background-color: #fff0f2; color: var(--teks-utama); }
+
+        .sembunyi { display: none; opacity: 0; transform: translateY(15px); }
+
+        .pesan-balasan {
+            text-align: left;
+            border-top: 1px solid #ffe3e8;
+            padding-top: 15px;
+            font-size: 0.95rem;
+            color: var(--teks-utama);
+            line-height: 1.6;
+        }
+
+        /* POLAROID POLOS BERSIH TANPA TEKS */
+        .polaroid-tunggal {
+            background: white;
+            padding: 10px 10px 15px 10px;
+            box-shadow: 0 6px 20px rgba(74, 59, 50, 0.08);
+            border-radius: 4px;
+            border: 1px solid #f2ece9;
+            margin-bottom: 25px;
+        }
+
+        .polaroid-tunggal img {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            object-fit: cover;
+            border-radius: 2px;
+            display: block;
+        }
+
+        .progres-bar {
+            font-size: 0.8rem;
+            color: var(--teks-pudar);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* --- ANIMASI KEYFRAMES --- */
+        @keyframes fall {
+            0% { top: -50px; transform: translateX(0) rotate(45deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { top: 105vh; transform: translateX(100px) rotate(405deg); opacity: 0; }
+        }
+
+        @keyframes fallLeaf {
+            0% { top: -50px; transform: translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.85; }
+            90% { opacity: 0.85; }
+            100% { top: 105vh; transform: translateX(80px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes denyutBunga { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes mengapungGlow { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 20px) scale(1.1); } }
+        @keyframes denyutGlow {
+            0% { box-shadow: 0 0 0 0 rgba(255, 143, 163, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 143, 163, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 143, 163, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-bg"></div>
+    <div class="glow-bg2"></div>
+
+    <div class="efek-container" id="efekLatar"></div>
+    
+    <audio id="musikRomantis" src="pilumembiru.mp3" loop></audio>
+
+    <div id="halamanCover" class="wrapper">
+        <div style="font-size: 3.5rem; margin-bottom: 20px; animation: denyutBunga 2.5s infinite ease-in-out;">🌸</div>
+        <h2>Ada pesan untukmu</h2>
+        <p style="text-align: center; margin-bottom: 25px;">Seseorang mengirimkan sebuah memori singkat khusus untuk hari-hari kamu.</p>
+        <button class="btn btn-buka" onclick="mulaiCerita()">Buka Memori</button>
+    </div>
+
+    <div id="fotoHal1" class="wrapper sembunyi">
+        <div class="progres-bar">eh eh eh</div>
+        <div class="polaroid-tunggal">
+            <img src="foto1.jpg" alt="Memori 1">
+        </div>
+        <button class="btn btn-lanjut" onclick="pindahHalaman('fotoHal1', 'fotoHal2')">Lanjut ✨</button>
+    </div>
+
+    <div id="fotoHal2" class="wrapper sembunyi">
+        <div class="progres-bar">inii siapaa yak???</div>
+        <div class="polaroid-tunggal">
+            <img src="foto2.jpg" alt="Memori 2">
+        </div>
+        <button class="btn btn-lanjut" onclick="pindahHalaman('fotoHal2', 'fotoHal3')">Lanjut ✨</button>
+    </div>
+
+    <div id="fotoHal3" class="wrapper sembunyi">
+        <div class="progres-bar">siapaa???</div>
+        <div class="polaroid-tunggal">
+            <img src="foto3.jpg" alt="Memori 3">
+        </div>
+        <button class="btn btn-lanjut" onclick="pindahHalaman('fotoHal3', 'fotoHal4')">Lanjut ✨</button>
+    </div>
+
+    <div id="fotoHal4" class="wrapper sembunyi">
+        <div class="progres-bar">ini benr jihann???</div>
+        <div class="polaroid-tunggal">
+            <img src="foto4.jpg" alt="Memori 4">
+        </div>
+        <button class="btn btn-lanjut" onclick="pindahHalaman('fotoHal4', 'fotoHal5')">Lanjut ✨</button>
+    </div>
+
+    <div id="fotoHal5" class="wrapper sembunyi">
+        <div class="progres-bar">ohh beneran jihan</div>
+        <div class="polaroid-tunggal">
+            <img src="foto5.jpg" alt="Memori 5">
+        </div>
+        <button class="btn btn-lanjut" onclick="pindahHalaman('fotoHal5', 'kotakUtama')">Baca Surat Akhir ✉️</button>
+    </div>
+
+    <div id="kotakUtama" class="wrapper sembunyi">
+        <div class="garis"></div>
+        <h2>eumm han aku mau ngomong</h2>
+        <p>
+            Setelah lama kita temenan aku baru sadar, Kalo ternyata setiap ada hal hal random aku selalu pengen cerita ke kamu apapun itu. Dari dulu yang aku suka tanya tentang tugas-tugas sampe sekarang sedeket ini.<br><br>
+            Aku pengen kita ngga cuma sekadar jadi temen cerita yang datang dan pergi. Aku pengen kita lebih dari itu, buat nemenin hari-hari kamu ke depan. Mau kan, jalan bareng aku?
+        </p>
+        <div class="tombol-box">
+            <button class="btn btn-ya" onclick="responsYa()">Mau</button>
+            <button class="btn btn-tidak" onclick="responsTidak()">Maaf ya...</button>
+        </div>
+    </div>
+
+    <div id="kotakYa" class="wrapper sembunyi">
+        <div class="garis"></div>
+        <h2>Senang Mendengarnya 🌸</h2>
+        <div class="pesan-balasan">
+            Makasih banyak ya udah mau menyambut niat baikku. Kita jalani ini santai aja, saling support, dan saling dengerin satu sama lain. 😊<br><br>
+            <span style="font-size: 0.85rem; color: var(--teks-pudar);">Membuka WhatsApp untuk mengirim jawaban...</span>
+        </div>
+    </div>
+
+    <div id="kotakTidak" class="wrapper sembunyi">
+        <div class="garis"></div>
+        <h2>Terima Kasih</h2>
+        <div class="pesan-balasan">
+            Gak apa-apa, makasih banyak ya udah mau jujur. Aku beneran ngehargai jawaban kamu. Semoga hari-hari kamu selalu menyenangkan ke depannya.<br><br>
+            <span style="font-size: 0.85rem; color: var(--teks-pudar);">Membuka WhatsApp untuk mengirim jawaban...</span>
+        </div>
+    </div>
+
+    <script {nonce}>
+        const nomorWA = "6282230376361";
+        const audio = document.getElementById("musikRomantis");
+        audio.volume = 0.4;
+
+        const wadah = document.getElementById('efekLatar');
+        
+        // Generator Kelopak Sakura (12 Buah)
+        for (let i = 0; i < 12; i++) {
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            petal.style.left = Math.random() * 100 + 'vw';
+            const ukuran = Math.random() * 8 + 8;
+            petal.style.width = ukuran + 'px';
+            petal.style.height = ukuran + 'px';
+            petal.style.animationDuration = Math.random() * 3 + 4 + 's';
+            petal.style.animationDelay = Math.random() * 5 + 's';
+            wadah.appendChild(petal);
+        }
+
+        // Generator Daun Berjatuhan (12 Buah)
+        for (let i = 0; i < 12; i++) {
+            const leaf = document.createElement('div');
+            leaf.classList.add('leaf');
+            leaf.style.left = Math.random() * 100 + 'vw';
+            const ukuranDaun = Math.random() * 6 + 10;
+            leaf.style.width = ukuranDaun + 'px';
+            leaf.style.height = (ukuranDaun * 1.5) + 'px';
+            leaf.style.animationDuration = Math.random() * 4 + 5 + 's';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            wadah.appendChild(leaf);
+        }
+
+        function mulaiCerita() {
+            audio.play().catch(err => console.log(err));
+            pindahHalaman("halamanCover", "fotoHal1");
+        }
+
+        function responsYa() { 
+            pindahHalaman("kotakUtama", "kotakYa");
+            const teksPesan = encodeURIComponent("Hai! Aku udah buka web dari kamu. Dan jawabannya... aku mau jalan bareng kamu! 😊🌸");
+            setTimeout(() => {
+                window.location.href = `https://api.whatsapp.com/send?phone=${nomorWA}&text=${teksPesan}`;
+            }, 1200);
+        }
+
+        function responsTidak() { 
+            pindahHalaman("kotakUtama", "kotakTidak");
+            const teksPesan = encodeURIComponent("Hai, makasih ya buat web pesannya. Aku beneran ngehargai itu, tapi maaf banget ya belum bisa... Terima kasih udah jujur 🙏");
+            setTimeout(() => {
+                window.location.href = `https://api.whatsapp.com/send?phone=${nomorWA}&text=${teksPesan}`;
+            }, 1200);
+        }
+
+        function pindahHalaman(idLama, idBaru) {
+            const lama = document.getElementById(idLama);
+            const baru = document.getElementById(idBaru);
+            
+            lama.style.opacity = "0";
+            lama.style.transform = "translateY(-15px)";
+            
+            setTimeout(() => {
+                lama.style.display = "none";
+                baru.style.display = "block";
+                setTimeout(() => {
+                    baru.classList.remove("sembunyi");
+                    baru.style.opacity = "1";
+                    baru.style.transform = "translateY(0)";
+                }, 50);
+            }, 400);
+        }
+    </script>
+</body>
+</html>
